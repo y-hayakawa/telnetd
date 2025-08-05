@@ -272,6 +272,10 @@ void handle_client(int client_fd, const char *client_ip) {
             printf("\n");
 #endif
             ssize_t w = telnet_strip_iac_full(buf, r, tbuf, sizeof(tbuf), master_fd);
+            if (w == 2 && tbuf[0] == 0x0d && tbuf[1] == 0x00) {
+                tbuf[0] = 0x0a; // LF
+                w = 1;
+            }
 #ifdef DEBUG           
             printf("[child %d] recv %zd bytes from client, write %zd bytes to pty\n", getpid(), r, w);
 #endif
