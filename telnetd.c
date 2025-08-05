@@ -29,6 +29,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <netinet/in.h>
+#include <sys/stat.h>
 
 #include <iconv.h>
 
@@ -37,7 +38,9 @@
 #undef DEBUG
 
 const char *allowed_ips[] = { "127.0.0.1", "192.168.1.2", NULL };
+
 int enable_encoding_conv = 0;
+int run_as_daemon = 0;
 
 ssize_t codeconv(const char *from, const char *to,
     const char *inbuf, size_t inlen, char *outbuf, size_t outlen)
@@ -336,6 +339,22 @@ int main(int argc, char *argv[]) {
             enable_encoding_conv = 1;
             printf("Encoding conversion (EUC-JP <-> UTF-8) enabled\n");
         }
+        if (strcmp(argv[argi], "-d") == 0 || strcmp(argv[argi], "--daemon") == 0) {
+            run_as_daemon = 1;
+        }
+    }
+
+    if (run_as_daemon) {
+        pid_t pid = fork();
+        if (pid < 0) exit(1);
+        if (pid > 0) exit(0); // 親プロセス終了
+        setsid();
+        chdir("/");
+        umask(0);
+        close(0); close(1); close(2);
+        open("/dev/null", O_RDWR); // stdin
+        dup(0); // stdout
+        dup(0); // stderr
     }
     
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
