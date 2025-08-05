@@ -36,7 +36,7 @@
 #define MAX_CLIENTS 8
 #undef DEBUG
 
-const char *allowed_ips[] = { "127.0.0.1", "192.160.1.2", NULL };
+const char *allowed_ips[] = { "127.0.0.1", "192.168.1.2", NULL };
 int enable_encoding_conv = 0;
 
 ssize_t codeconv(const char *from, const char *to,
