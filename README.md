@@ -73,3 +73,12 @@ After connecting, to avoid display glitches, set the terminal type:
 ```sh
 $ TERM=vt100
 ```
+
+---
+
+## License
+
+This code is released into the public domain. You may use, modify, and distribute it freely without restriction.
+
+The author assumes no responsibility or liability for any damage, loss, or legal issues arising from the use of this software. Use it entirely at your own risk.
+
