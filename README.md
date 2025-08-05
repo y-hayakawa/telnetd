@@ -22,7 +22,7 @@ Since UTF-8 is the de facto standard character encoding in most environments, th
 Edit the following line near the top of `telnetd.c`:
 
 ```c
-const char *allowed_ips[] = { "127.0.0.1", "192.160.1.2", NULL };
+const char *allowed_ips[] = { "127.0.0.1", "192.168.1.2", NULL };
 ```
 
 Add the IP address of your guest OS to this list.\
