@@ -31,6 +31,9 @@
 #include <netinet/in.h>
 #include <sys/stat.h>
 
+#include <signal.h>
+#include <sys/wait.h>
+
 #include <iconv.h>
 
 #define PORT 2323
@@ -41,6 +44,11 @@ const char *allowed_ips[] = { "127.0.0.1", "192.168.1.2", NULL };
 
 int enable_encoding_conv = 0;
 int run_as_daemon = 0;
+
+void sigchld_handler(int sig) {
+    // 非同期で複数子プロセスを回収
+    while (waitpid(-1, NULL, WNOHANG) > 0);
+}
 
 ssize_t codeconv(const char *from, const char *to,
     const char *inbuf, size_t inlen, char *outbuf, size_t outlen)
@@ -343,6 +351,12 @@ int main(int argc, char *argv[]) {
             run_as_daemon = 1;
         }
     }
+
+    struct sigaction sa;
+    sa.sa_handler = sigchld_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART | SA_NOCLDSTOP;
+    sigaction(SIGCHLD, &sa, NULL);
 
     if (run_as_daemon) {
         pid_t pid = fork();
