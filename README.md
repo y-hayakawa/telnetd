@@ -13,6 +13,7 @@ Since UTF-8 is the de facto standard character encoding in most environments, th
 > ⚠️ This server is intended for use **within the same machine**.\
 > There is **no authentication mechanism** implemented.\
 > Be sure to properly configure your **firewall or network settings** to prevent external access.\
+> Do not run this server as a privileged user account.
 > Use at your own risk.
 
 ---
@@ -31,6 +32,8 @@ Add the IP address of your guest OS to this list.\
 ---
 
 ## Build
+
+Run the following command on your host OS (e.g. Linux or macOS):
 
 ```sh
 $ cc -o telnetd telnetd.c
