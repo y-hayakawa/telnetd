@@ -234,6 +234,7 @@ void handle_client(int client_fd, const char *client_ip) {
         if (login_tty(slave_fd) < 0) {
             _exit(100);
         }
+        setenv("TERM","vt00",1);
         execl("/bin/bash", "bash", "-i", NULL);
         _exit(101); // exec失敗
     }
