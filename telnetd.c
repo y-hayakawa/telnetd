@@ -30,9 +30,7 @@
 #include <errno.h>
 #include <netinet/in.h>
 #include <sys/stat.h>
-
-#include <signal.h>
-#include <sys/wait.h>
+#include <pwd.h>
 
 #include <iconv.h>
 
@@ -40,14 +38,18 @@
 #define MAX_CLIENTS 8
 #undef DEBUG
 
-const char *allowed_ips[] = { "127.0.0.1", "192.168.1.2", NULL };
+const char *allowed_ips[] = { "127.0.0.1", "172.31.111.5", "172.31.111.9", NULL };
 
 int enable_encoding_conv = 0;
 int run_as_daemon = 0;
 
-void sigchld_handler(int sig) {
-    // 非同期で複数子プロセスを回収
-    while (waitpid(-1, NULL, WNOHANG) > 0);
+
+// SIGCHLD handler
+void sigchld_handler(int signo) {
+    int status;
+    while (waitpid(-1, &status, WNOHANG) > 0) {
+        ;
+    }
 }
 
 ssize_t codeconv(const char *from, const char *to,
@@ -234,7 +236,11 @@ void handle_client(int client_fd, const char *client_ip) {
         if (login_tty(slave_fd) < 0) {
             _exit(100);
         }
-        setenv("TERM","vt00",1);
+        struct passwd *pw = getpwuid(getuid());
+        if (pw && pw->pw_dir) {
+            chdir(pw->pw_dir);
+        }
+        setenv("TERM", "vt100", 1);
         execl("/bin/bash", "bash", "-i", NULL);
         _exit(101); // exec失敗
     }
@@ -356,7 +362,7 @@ int main(int argc, char *argv[]) {
     struct sigaction sa;
     sa.sa_handler = sigchld_handler;
     sigemptyset(&sa.sa_mask);
-    sa.sa_flags = SA_RESTART | SA_NOCLDSTOP;
+    sa.sa_flags = SA_RESTART; 
     sigaction(SIGCHLD, &sa, NULL);
 
     if (run_as_daemon) {
