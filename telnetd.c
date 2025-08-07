@@ -38,7 +38,7 @@
 #define MAX_CLIENTS 8
 #undef DEBUG
 
-const char *allowed_ips[] = { "127.0.0.1", "172.31.111.5", "172.31.111.9", NULL };
+const char *allowed_ips[] = { "127.0.0.1", "192.168.1.2", NULL };
 
 int enable_encoding_conv = 0;
 int run_as_daemon = 0;
